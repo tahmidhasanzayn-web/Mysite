@@ -1,0 +1,931 @@
+<title>Nightshift Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* One page, two parts. #intro is a scroll-driven lamp scene on a sticky canvas. #studio is the stories, sketchpad and randomizer deck below it. Each part has its own scoped CSS so classes never collide. Dark, single look by design. */
+:root {
+    --ink: #05070f;
+    --paper: #eaf0ff;
+    --muted: #9aa6d4;
+    --line: rgba(154, 166, 212, 0.28);
+    --cyan: #5ce1ff;
+    --violet: #8b6cff;
+    --pink: #ff4fd8;
+    --on-glow: #04101a;
+    --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+    --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(44px, calc(env(safe-area-inset-right, 0px) + 36px));
+    color-scheme: dark;
+  
+
+    --s-bg: #060914;
+    --s-panel: #0d1330;
+    --s-panel-glass: rgba(13, 19, 48, 0.78);
+    --s-raise: #141c42;
+    --s-fg: #e6ebff;
+    --s-muted: #8e99c4;
+    --s-line: #26305f;
+    --s-cyan: #5ce1ff;
+    --s-violet: #8b6cff;
+    --s-pink: #ff4fd8;
+    --s-canvas: #080c1e;
+    --s-ink-on-glow: #04101a;
+    --s-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+    --s-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --s-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+#studio {
+  background-color: var(--s-bg); background-image: linear-gradient(#1428cd, var(--s-bg) 240px); background-repeat: no-repeat;
+  color: var(--s-fg); font-family: var(--s-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 96px 48px;
+}
+#intro .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+#intro .cta .btn { margin-top: 0; }
+#intro .btn.ghost { background: transparent; color: var(--paper); border: 1px solid var(--line); }
+#intro .btn.ghost:hover { background: rgba(255,255,255,0.1); }
+
+/* intro */
+*{ box-sizing: border-box; }
+#intro #track{ position: relative; height: 760vh; }
+#intro .stage{ position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--ink); }
+#intro #gl{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#intro .ch{
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 var(--gutter-r) max(9svh, 28px) var(--gutter-l);
+    pointer-events: none; opacity: 0; will-change: opacity, transform;
+  }
+#intro .ch[data-c="0"]{ opacity: 1; }
+#intro .ch .in{ max-width: 34rem; min-width: 0; }
+#intro .ch.mid .in{ text-align: center; margin-inline: auto; }
+#intro .ch.mid{ align-items: center; }
+@media (min-width: 760px){#intro .ch{ padding-right: max(64px, calc(env(safe-area-inset-right, 0px) + 56px)); padding-left: max(48px, env(safe-area-inset-left, 0px)); }
+#intro .ch.side{ justify-content: center; padding-bottom: 0; }
+#intro .ch.right{ align-items: flex-end; }}
+#intro .eyebrow{ margin: 0 0 14px; font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); }
+#intro h1, #intro h2{ margin: 0; font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.04; text-wrap: balance; overflow-wrap: anywhere; }
+#intro h1{ font-size: clamp(2.1rem, 9.4vw, 4.6rem); }
+#intro h2{ font-size: clamp(2.3rem, 10vw, 4.8rem); }
+#intro h2.long{ font-size: clamp(1.9rem, 7.4vw, 3.6rem); }
+#intro .grad{ background: linear-gradient(100deg, var(--cyan), var(--violet) 55%, var(--pink)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+#intro .lede{ margin: 16px 0 0; max-width: 40ch; font-size: clamp(1rem, 2.6vw, 1.15rem); color: var(--paper); }
+#intro .ch.mid .lede{ margin-inline: auto; }
+#intro .specs{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 22px 0 0; border-top: 1px solid var(--line); }
+#intro .specs div{ padding: 10px 10px 0 0; min-width: 0; }
+#intro .specs dt{ font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+#intro .specs dd{ margin: 3px 0 0; font-family: var(--display); font-weight: 500; font-size: 0.86rem; line-height: 1.3; overflow-wrap: anywhere; }
+#intro .count{ display: block; margin-top: 14px; font-family: var(--display); font-weight: 700; font-size: clamp(2.6rem, 13vw, 5.4rem); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: transparent; -webkit-text-stroke: 1.5px var(--cyan); }
+#intro .count-label{ margin: 8px 0 0; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+#intro .btn{ display: inline-flex; align-items: center; min-height: 46px; margin-top: 24px; padding: 10px 22px; background: var(--paper); color: #0a1340; border: 0; font-family: var(--mono); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; pointer-events: auto; }
+#intro .btn:hover{ background: #fff; }
+#intro .sign{ margin: 18px 0 0; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; color: rgba(234, 240, 255, 0.75); }
+#intro .prog{ position: absolute; top: 0; left: 0; height: 2px; width: 0; background: linear-gradient(90deg, var(--cyan), var(--violet), var(--pink)); z-index: 3; }
+#intro .hud{ position: absolute; z-index: 3; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; gap: 12px; padding: 14px max(16px, env(safe-area-inset-right, 0px)) 0 var(--gutter-l); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--paper); pointer-events: none; }
+#intro .hud span{ opacity: 0.8; }
+#intro .clock{ font-variant-numeric: tabular-nums; }
+#intro .rail{ position: absolute; z-index: 3; right: max(6px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; }
+#intro .rail button{ width: 30px; height: 30px; padding: 0; background: none; border: 0; cursor: pointer; display: grid; place-items: center; }
+#intro .rail button::before{ content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--paper); transition: transform 0.2s, background 0.2s; }
+#intro .rail button[aria-current="true"]::before{ background: var(--cyan); border-color: var(--cyan); transform: scale(1.5); }
+#intro .hint{ position: absolute; z-index: 3; left: 0; right: 0; bottom: max(1.6svh, 10px); display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); pointer-events: none; }
+#intro .hint i{ display: block; width: 1px; height: 22px; background: linear-gradient(var(--cyan), transparent); animation: drip 1.8s ease-in-out infinite; transform-origin: top; }
+@keyframes drip{ 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce){#intro .hint i{ animation: none; }
+#intro .rail button::before{ transition: none; }}
+/* studio */
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+#studio .wrap{ max-width: 1040px; margin: 0 auto; }
+#studio button, #studio input, #studio textarea{ font: inherit; color: inherit; }
+#studio .bar{
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding-block: 16px;
+    font-family: var(--s-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--s-muted);
+  }
+#studio .bar .status{ display: inline-flex; align-items: center; gap: 8px; color: var(--s-fg); }
+#studio .pulse{ width: 8px; height: 8px; border-radius: 50%; background: var(--s-cyan); box-shadow: 0 0 10px var(--s-cyan); animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse{ 50% { opacity: 0.35; } }
+#studio .clock{ font-variant-numeric: tabular-nums; }
+#studio .hero{
+    position: relative; overflow: hidden;
+    border: 1px solid var(--s-line);
+    background: radial-gradient(120% 90% at 85% 0%, #1a1650 0%, var(--s-bg) 60%);
+    padding: clamp(36px, 8vw, 84px) clamp(20px, 5vw, 56px);
+    isolation: isolate;
+  }
+#studio .hero canvas{ position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+#studio .eyebrow{ font-family: var(--s-mono); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--s-cyan); margin: 0 0 18px; }
+#studio h1{
+    margin: 0; font-family: var(--s-display); font-weight: 700;
+    font-size: clamp(2.1rem, 8.4vw, 4.6rem); line-height: 1.02; letter-spacing: -0.02em; text-wrap: balance;
+    color: var(--s-cyan);
+    background: linear-gradient(100deg, var(--s-cyan) 0%, var(--s-violet) 55%, var(--s-pink) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    overflow-wrap: anywhere;
+  }
+#studio .lede{ max-width: 52ch; margin: 22px 0 0; font-size: clamp(1rem, 2.6vw, 1.15rem); color: var(--s-fg); }
+#studio .hero-actions{ display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+#studio .btn{
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 18px;
+    background: transparent; border: 1px solid var(--s-cyan); color: var(--s-cyan);
+    font-family: var(--s-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+    cursor: pointer; transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+  }
+#studio .btn:hover{ box-shadow: 0 0 18px rgba(92, 225, 255, 0.45); }
+#studio .btn.primary{ background: linear-gradient(100deg, var(--s-cyan), var(--s-violet)); border-color: transparent; color: var(--s-ink-on-glow); font-weight: 500; }
+#studio .btn.quiet{ border-color: var(--s-line); color: var(--s-muted); }
+#studio .btn.quiet:hover{ color: var(--s-fg); box-shadow: none; border-color: var(--s-muted); }
+#studio .btn[aria-pressed="true"]{ background: rgba(92, 225, 255, 0.14); }
+#studio .eq{ display: flex; align-items: flex-end; gap: 3px; height: 56px; margin-top: 34px; max-width: 560px; }
+#studio .eq i{ flex: 1; min-width: 0; height: 100%; transform-origin: bottom; transform: scaleY(0.4); background: linear-gradient(to top, var(--s-cyan), var(--s-violet) 60%, var(--s-pink)); animation: eq 1.2s ease-in-out infinite alternate; }
+@keyframes eq{ from { transform: scaleY(0.12); } to { transform: scaleY(1); } }
+#studio .hero::after{ content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--s-cyan), transparent); opacity: 0.4; pointer-events: none; animation: scan 7s linear infinite; }
+@keyframes scan{ to { top: 100%; } }
+#studio .ticker{ margin-top: 16px; border-block: 1px solid var(--s-line); overflow: hidden; white-space: nowrap; font-family: var(--s-mono); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--s-muted); }
+#studio .ticker .track{ display: inline-flex; animation: slide 30s linear infinite; }
+#studio .ticker .grp{ display: inline-flex; gap: 40px; padding: 10px 40px 10px 0; }
+#studio .ticker .grp span::before{ content: "+ "; color: var(--s-cyan); }
+@keyframes slide{ to { transform: translateX(-50%); } }
+#studio .meters{ display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; margin-bottom: 20px; }
+#studio .meter{ background: var(--s-panel); border: 1px solid var(--s-line); padding: 12px 14px; min-width: 0; }
+#studio .meter .top{ display: flex; justify-content: space-between; gap: 8px; font-family: var(--s-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--s-muted); }
+#studio .meter .top b{ color: var(--s-fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+#studio .bar-track{ height: 6px; margin-top: 10px; background: var(--s-canvas); overflow: hidden; }
+#studio .bar-fill{ position: relative; height: 100%; width: 3%; overflow: hidden; background: linear-gradient(90deg, var(--s-cyan), var(--s-violet)); transition: width 0.8s ease; }
+#studio .bar-fill::after{ content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); transform: translateX(-100%); animation: shim 2.2s linear infinite; }
+@keyframes shim{ to { transform: translateX(100%); } }
+#studio .deck{ margin-top: 28px; }
+#studio .tabs{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+#studio .tab{
+    min-height: 44px; padding: 8px 18px; background: var(--s-panel); border: 1px solid var(--s-line); color: var(--s-muted);
+    font-family: var(--s-mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  }
+#studio .tab[aria-selected="true"]{ color: var(--s-ink-on-glow); background: var(--s-cyan); border-color: var(--s-cyan); }
+#studio .panel{
+    position: relative; background: var(--s-panel-glass); border: 1px solid var(--s-line);
+    padding: clamp(18px, 4vw, 36px);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+#studio .panel::before, #studio .panel::after{ content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--s-cyan); pointer-events: none; }
+#studio .panel::before{ top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+#studio .panel::after{ bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+#studio h2{ margin: 0 0 6px; font-family: var(--s-display); font-weight: 500; font-size: clamp(1.25rem, 4vw, 1.7rem); letter-spacing: -0.01em; text-wrap: balance; }
+#studio h3{ margin: 0 0 12px; font-family: var(--s-mono); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--s-cyan); }
+#studio .meta{ font-family: var(--s-mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--s-muted); margin: 0 0 22px; }
+#studio .split{ display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); }
+#studio .split > *{ min-width: 0; }
+@media (max-width: 800px){#studio .split{ grid-template-columns: minmax(0, 1fr); }}
+#studio .story p{ max-width: 62ch; margin: 0 0 1.1em; font-size: 1.04rem; line-height: 1.78; }
+#studio .story p:last-child{ margin-bottom: 0; }
+#studio .sign{ color: var(--s-muted); font-family: var(--s-mono); font-size: 0.8rem; }
+#studio label.field{ display: block; font-family: var(--s-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--s-muted); margin-bottom: 6px; }
+#studio .input{
+    width: 100%; background: var(--s-canvas); border: 1px solid var(--s-line); color: var(--s-fg);
+    padding: 11px 12px; border-radius: 0; margin-bottom: 14px; font-size: 1rem;
+  }
+#studio .input:focus{ border-color: var(--s-cyan); box-shadow: 0 0 0 1px var(--s-cyan); outline: none; }
+#studio textarea.input{ min-height: 150px; resize: vertical; line-height: 1.6; }
+#studio .note{ font-family: var(--s-mono); font-size: 0.75rem; color: var(--s-muted); min-height: 1.4em; margin: 10px 0 0; }
+#studio .entries{ display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+#studio .entry{ background: var(--s-raise); border: 1px solid var(--s-line); padding: 14px 16px; min-width: 0; }
+#studio .entry h4{ margin: 0 0 4px; font-family: var(--s-display); font-weight: 500; font-size: 0.95rem; overflow-wrap: anywhere; }
+#studio .entry p{ margin: 0 0 10px; color: var(--s-muted); font-size: 0.92rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+#studio .entry .row{ display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--s-mono); font-size: 0.72rem; color: var(--s-muted); }
+#studio .link{ background: none; border: 0; padding: 6px 0; min-height: 32px; color: var(--s-pink); cursor: pointer; font-family: var(--s-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+#studio .empty{ border: 1px dashed var(--s-line); padding: 18px; color: var(--s-muted); font-size: 0.92rem; }
+#studio .stage{ position: relative; border: 1px solid var(--s-line); background: var(--s-canvas); }
+#studio .stage canvas{ display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; touch-action: none; cursor: crosshair; max-width: 100%; }
+#studio .hint{ position: absolute; left: 12px; bottom: 10px; font-family: var(--s-mono); font-size: 0.72rem; color: var(--s-muted); pointer-events: none; transition: opacity 0.3s; }
+#studio .tools{ display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 16px 0; }
+#studio .swatches{ display: flex; gap: 8px; flex-wrap: wrap; }
+#studio .sw{ width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--s-line); cursor: pointer; padding: 0; }
+#studio .sw[aria-pressed="true"]{ border-color: var(--s-fg); box-shadow: 0 0 0 2px var(--s-bg), 0 0 0 4px var(--s-fg); }
+#studio .size{ display: inline-flex; align-items: center; gap: 8px; font-family: var(--s-mono); font-size: 0.72rem; color: var(--s-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+#studio input[type="range"]{ accent-color: var(--s-cyan); width: 110px; }
+#studio .wall{ display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 12px; margin-top: 6px; }
+#studio .tile{ background: var(--s-raise); border: 1px solid var(--s-line); padding: 8px; min-width: 0; }
+#studio .tile img{ display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+#studio .tile .row{ display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; font-family: var(--s-mono); font-size: 0.7rem; color: var(--s-muted); }
+#studio .chips{ display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+#studio .chip{ border: 1px solid var(--s-line); background: var(--s-raise); padding: 8px 12px; font-size: 0.9rem; min-width: 0; overflow-wrap: anywhere; }
+#studio .chip b{ display: block; font-family: var(--s-mono); font-weight: 500; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--s-cyan); margin-bottom: 2px; }
+#studio .prompt{ font-size: clamp(1.1rem, 3.2vw, 1.4rem); line-height: 1.45; margin: 14px 0 20px; max-width: 40ch; text-wrap: balance; }
+#studio .rule{ border: 0; border-top: 1px solid var(--s-line); margin: 28px 0; }
+#studio footer{ margin-top: 36px; font-family: var(--s-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--s-muted); max-width: 70ch; }
+@media (prefers-reduced-motion: reduce){#studio .pulse, #studio .eq i, #studio .hero::after, #studio .ticker .track, #studio .bar-fill::after{ animation: none; }
+#studio .ticker{ overflow-x: auto; }
+html{ scroll-behavior: auto; }
+#studio .btn{ transition: none; }}
+</style>
+
+<div id="intro">
+
+
+<main id="track">
+  <div class="stage" id="stage">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="prog" id="prog"></div>
+    <div class="hud"><span>Nightshift / Lamp</span><span>Dhaka <b class="clock" id="lclock" style="font-weight:500">--:--:--</b></span></div>
+    <nav class="rail" id="rail" aria-label="Chapters"></nav>
+
+    <section class="ch mid" data-c="0">
+      <div class="in">
+        <p class="eyebrow">Nightshift Studio / Issue 01</p>
+        <h1><span class="grad">Stories that run all night.</span></h1>
+        <p class="lede">Scroll to light the lamp.</p>
+      </div>
+    </section>
+
+    <section class="ch side" data-c="1">
+      <div class="in">
+        <p class="eyebrow">01 / The lamp</p>
+        <h2 class="long">The future of storytelling.</h2>
+        <p class="lede">A one-person lab for stories, drawings and odd ideas, started after midnight and still running.</p>
+      </div>
+    </section>
+
+    <section class="ch side right" data-c="2">
+      <div class="in">
+        <p class="eyebrow">02 / Stories</p>
+        <h2><span class="grad">Stories</span></h2>
+        <p class="lede">Every night the old boatman hung a lamp at the front of his boat, though nobody had crossed the river after dark in years.</p>
+        <dl class="specs">
+          <div><dt>Featured</dt><dd>The Boatman's Lamp</dd></div>
+          <div><dt>Read time</dt><dd>2 min</dd></div>
+          <div><dt>Status</dt><dd>Still burning</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="ch side" data-c="3">
+      <div class="in">
+        <p class="eyebrow">03 / Art</p>
+        <h2><span class="grad">Art</span></h2>
+        <p class="lede">A neon sketchpad on a midnight sheet. Draw with a glowing brush, pin your best one to the wall.</p>
+        <dl class="specs">
+          <div><dt>Brush</dt><dd>Neon glow</dd></div>
+          <div><dt>Sheet</dt><dd>Midnight</dd></div>
+          <div><dt>Colors</dt><dd>6</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="ch side right" data-c="4">
+      <div class="in">
+        <p class="eyebrow">04 / Random</p>
+        <h2><span class="grad">Random</span></h2>
+        <span class="count" id="count">0</span>
+        <p class="count-label">story premises in the spark machine</p>
+        <dl class="specs">
+          <div><dt>Ingredients</dt><dd>3</dd></div>
+          <div><dt>Twist</dt><dd>1</dd></div>
+          <div><dt>Drawing dares</dt><dd>56</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="ch mid" data-c="5">
+      <div class="in">
+        <p class="eyebrow">05 / Your turn</p>
+        <h2 class="long">Light your own lamp.</h2>
+        <p class="lede">Write the first line. Draw something strange. The night is long.</p>
+        <div class="cta"><button class="btn" id="enter" type="button">Enter the studio</button><button class="btn ghost" id="again" type="button">Back to the start</button></div>
+        <p class="sign">Built together at 3 a.m. in Dhaka.</p>
+      </div>
+    </section>
+
+    <div class="hint" id="lhint"><span>Scroll</span><i></i></div>
+  </div>
+</main>
+
+
+</div>
+
+<div id="studio">
+
+
+<div class="wrap">
+  <header class="bar">
+    <span class="status"><span class="pulse" aria-hidden="true"></span>Systems online</span>
+    <span>Dhaka <span class="clock" id="clock">--:--:--</span> &middot; <span id="dateline">15.10.2026</span></span>
+  </header>
+
+  <section class="hero" id="hero">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <p class="eyebrow">Stories / Art / Experiments</p>
+    <h1>Nightshift Studio</h1>
+    <p class="lede">A one-person lab for stories, drawings and odd ideas. Started after midnight, still running.</p>
+    <div class="hero-actions">
+      <button class="btn primary" type="button" data-go="stories">Read a transmission</button>
+      <button class="btn" type="button" data-go="sketch">Open the sketchpad</button>
+    </div>
+    <div class="eq" id="eq" aria-hidden="true"></div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="track" id="ticktrack"><div class="grp" id="grp"><span>Stories</span><span>Neon sketches</span><span>Random experiments</span><span>Written in Dhaka</span><span>Built after midnight</span><span>Open all night</span><span>Draw something strange</span></div></div></div>
+
+  <main class="deck" id="deck">
+    <div class="meters" aria-label="Studio output">
+      <div class="meter"><div class="top"><span>Pages written</span><b id="m-pages">0</b></div><div class="bar-track"><div class="bar-fill" id="b-pages"></div></div></div>
+      <div class="meter"><div class="top"><span>Drawings pinned</span><b id="m-art">0</b></div><div class="bar-track"><div class="bar-fill" id="b-art"></div></div></div>
+      <div class="meter"><div class="top"><span>Ideas in jar</span><b id="m-jar">0</b></div><div class="bar-track"><div class="bar-fill" id="b-jar"></div></div></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Studio sections">
+      <button class="tab" role="tab" id="tab-stories" aria-controls="p-stories" aria-selected="true" type="button">Stories</button>
+      <button class="tab" role="tab" id="tab-sketch" aria-controls="p-sketch" aria-selected="false" type="button">Sketchpad</button>
+      <button class="tab" role="tab" id="tab-random" aria-controls="p-random" aria-selected="false" type="button">Randomizer</button>
+    </div>
+
+    <!-- STORIES -->
+    <section class="panel" id="p-stories" role="tabpanel" aria-labelledby="tab-stories">
+      <div class="split">
+        <article class="story">
+          <h3>Featured transmission</h3>
+          <h2>The Boatman's Lamp</h2>
+          <p class="meta">Short story &middot; 2 min read &middot; Written at the studio</p>
+          <p>Every night the old boatman hung a lamp at the front of his boat, though nobody had crossed the river after dark in years. When the village children asked why, he said the lamp was not for people. It was for the river, which got lonely when the ferries stopped.</p>
+          <p>The children laughed, and the boatman let them. He trimmed the wick, wiped the glass, and sat with his feet over the water while the current talked to itself in low, wet syllables.</p>
+          <p>The monsoon came early that year. For eleven nights the rain was so thick the lamp lit only a small gold room around the boat, and he sat inside it anyway, because that was the job he had given himself.</p>
+          <p>On the twelfth night the rain thinned. Far off, on the opposite bank, a second light blinked once, twice, and held steady.</p>
+          <p>He never learned whose it was. He hung his own lamp a little higher after that.</p>
+        </article>
+
+        <div>
+          <h3>Add your own page</h3>
+          <label class="field" for="s-title">Title</label>
+          <input class="input" id="s-title" type="text" maxlength="80" placeholder="Name your story">
+          <label class="field" for="s-text">Story</label>
+          <textarea class="input" id="s-text" placeholder="Start anywhere. A line is enough."></textarea>
+          <button class="btn primary" id="s-save" type="button">Save page</button>
+          <p class="note" id="s-note" role="status"></p>
+          <hr class="rule">
+          <h3>Your pages</h3>
+          <ul class="entries" id="s-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKETCH -->
+    <section class="panel" id="p-sketch" role="tabpanel" aria-labelledby="tab-sketch" hidden>
+      <h2>Sketchpad</h2>
+      <p class="meta">Neon brush on a dark sheet. Works with mouse, finger or stylus.</p>
+      <div class="stage">
+        <canvas id="pad" width="900" height="600" aria-label="Drawing canvas"></canvas>
+        <span class="hint" id="hint">Starter doodle on the sheet. Draw over it or clear it.</span>
+      </div>
+      <div class="tools">
+        <div class="swatches" id="swatches" role="group" aria-label="Brush color"></div>
+        <label class="size" for="size">Size <input id="size" type="range" min="2" max="40" value="8"></label>
+        <button class="btn quiet" id="glow" type="button" aria-pressed="true">Glow</button>
+        <button class="btn quiet" id="erase" type="button" aria-pressed="false">Eraser</button>
+        <button class="btn quiet" id="undo" type="button">Undo</button>
+        <button class="btn quiet" id="clear" type="button">Clear</button>
+        <button class="btn primary" id="pin" type="button">Pin to wall</button>
+      </div>
+      <p class="note" id="a-note" role="status"></p>
+      <hr class="rule">
+      <h3>The wall</h3>
+      <div class="wall" id="wall"></div>
+    </section>
+
+    <!-- RANDOM -->
+    <section class="panel" id="p-random" role="tabpanel" aria-labelledby="tab-random" hidden>
+      <div class="split">
+        <div>
+          <h2>Story spark</h2>
+          <p class="meta">Three random ingredients and one twist.</p>
+          <div class="chips" id="chips"></div>
+          <p class="prompt" id="prompt">Press generate to get a premise.</p>
+          <div class="hero-actions" style="margin-top:0">
+            <button class="btn primary" id="roll" type="button">Generate</button>
+            <button class="btn quiet" id="keep" type="button">Keep in jar</button>
+          </div>
+          <hr class="rule">
+          <h2>Drawing dare</h2>
+          <p class="meta">A subject and a rule to draw it by.</p>
+          <p class="prompt" id="dare">Press roll for a dare.</p>
+          <button class="btn" id="roll2" type="button">Roll dare</button>
+        </div>
+        <div>
+          <h3>Idea jar</h3>
+          <ul class="entries" id="jar"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Built together at 3 a.m. Everything you write or draw here is saved in this browser only, so it stays private to you on this device.</footer>
+</div>
+
+
+</div>
+
+<script>
+
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var track = $("track"), cv = $("gl"), ctx = cv.getContext("2d");
+  var chs = Array.prototype.slice.call(document.querySelectorAll(".ch"));
+  var N = chs.length, centers = chs.map(function (_, i) { return i / (N - 1); });
+  var W = 0, H = 0, dpr = 1;
+  var tp = 0, p = 0, mx = 0, my = 0, tmx = 0, tmy = 0;
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function ease(t) { return t * t * (3 - 2 * t); }
+  function kf(arr, v) {
+    var x = clamp(v, 0, 1) * (arr.length - 1), i = Math.min(arr.length - 2, Math.floor(x));
+    var t = ease(x - i);
+    return arr[i] + (arr[i + 1] - arr[i]) * t;
+  }
+
+  /* keyframes, one value per chapter */
+  var K = {
+    scale:  [0.78, 1.0, 1.12, 0.98, 1.1, 0.92],
+    spread: [0.8, 0.92, 1.05, 0.92, 1.16, 0.9],
+    hue:    [196, 200, 262, 322, 172, 212],
+    core:   [0.35, 0.9, 1.0, 1.0, 1.0, 1.0],
+    scatter:[0.55, 0.7, 0.8, 0.9, 1.7, 0.8],
+    ox:     [0, 0.22, -0.22, 0.22, -0.22, 0],
+    r: [5, 8, 3, 12, 4, 22], g: [7, 12, 3, 6, 14, 40], b: [15, 40, 8, 30, 24, 205]
+  };
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", function () { resize(); readScroll(); });
+
+  function readScroll() {
+    var r = track.getBoundingClientRect(), span = Math.max(1, r.height - window.innerHeight);
+    tp = clamp(-r.top / span, 0, 1);
+  }
+  window.addEventListener("scroll", readScroll, { passive: true });
+  window.addEventListener("pointermove", function (e) {
+    tmx = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+    tmy = (e.clientY / Math.max(1, window.innerHeight)) * 2 - 1;
+  }, { passive: true });
+
+  /* rail */
+  var rail = $("rail"), dots = [];
+  chs.forEach(function (_, i) {
+    var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Go to chapter " + (i + 1));
+    b.addEventListener("click", function () {
+      var top = track.getBoundingClientRect().top + window.pageYOffset;
+      var y = top + centers[i] * (track.offsetHeight - window.innerHeight);
+      window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+    });
+    rail.appendChild(b); dots.push(b);
+  });
+  $("enter").addEventListener("click", function () { $("studio").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
+  $("again").addEventListener("click", function () { window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); });
+
+  /* Dhaka clock */
+  var tf = null;
+  try { tf = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }); } catch (e) {}
+  function tick() { if (tf) $("lclock").textContent = tf.format(new Date()); }
+  tick(); setInterval(tick, 1000);
+
+  /* geometry */
+  var SP = [], i, k;
+  for (i = 0; i < 240; i++) {
+    var yy = 1 - (i / 239) * 2, rr = Math.sqrt(1 - yy * yy), th = i * 2.399963;
+    SP.push([Math.cos(th) * rr, yy, Math.sin(th) * rr]);
+  }
+  var PT = [];
+  for (i = 0; i < 90; i++) PT.push({ r: 1.5 + Math.random() * 1.3, ph: Math.random() * 6.283, sp: 0.4 + Math.random() * 1.1, y: (Math.random() - 0.5) * 1.6, hue: i % 2 ? 0 : 1 });
+
+  var q0 = 0, q1 = 0, q2 = 0;
+  function proj(x, y, z, ay, ax) {
+    var c = Math.cos(ay), s = Math.sin(ay), x1 = x * c + z * s, z1 = -x * s + z * c;
+    c = Math.cos(ax); s = Math.sin(ax);
+    var y1 = y * c - z1 * s, z2 = y * s + z1 * c, f = 3.2 / (3.2 - z2);
+    q0 = x1 * f; q1 = y1 * f; q2 = z2;
+  }
+
+  function ring(rad, tilt, ay, ax, R, cx, cy, h, alpha) {
+    var seg = 90, ct = Math.cos(tilt), st = Math.sin(tilt), pxv = 0, pyv = 0, j;
+    for (j = 0; j <= seg; j++) {
+      var u = j / seg * 6.28319, x = Math.cos(u) * rad, y = Math.sin(u) * rad;
+      proj(x, y * ct, y * st, ay, ax);
+      var X = cx + q0 * R, Y = cy + q1 * R;
+      if (j) {
+        ctx.strokeStyle = "hsla(" + h + ",100%,70%," + (alpha * clamp(0.5 + q2 * 0.32, 0.07, 1)).toFixed(3) + ")";
+        ctx.beginPath(); ctx.moveTo(pxv, pyv); ctx.lineTo(X, Y); ctx.stroke();
+      }
+      pxv = X; pyv = Y;
+    }
+  }
+
+  var visible = true;
+  if (window.IntersectionObserver) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(track);
+
+  function frame(t) {
+    if (!visible) { requestAnimationFrame(frame); return; }
+    p += (tp - p) * (reduce ? 1 : 0.085);
+    mx += (tmx - mx) * 0.06; my += (tmy - my) * 0.06;
+    var wide = W > 760;
+
+    /* background */
+    var br = kf(K.r, p), bg = kf(K.g, p), bb = kf(K.b, p);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "rgb(" + (br | 0) + "," + (bg | 0) + "," + (bb | 0) + ")";
+    ctx.fillRect(0, 0, W, H);
+
+    var cx = W / 2 + (wide ? kf(K.ox, p) * W : 0) + mx * 10;
+    var cy = H * (wide ? 0.5 : 0.34) + my * 8;
+    var R = Math.min(W * 0.5, H * 0.5) * 0.34 * kf(K.scale, p) * (wide ? 1.1 : 1);
+    var h = kf(K.hue, p), core = kf(K.core, p), spread = kf(K.spread, p), scat = kf(K.scatter, p);
+    var spin = reduce ? 0 : t * 0.00018;
+    var ay = p * 21 + spin + mx * 0.25, ax = 0.35 + 0.5 * Math.sin(p * 9.4) + my * 0.2;
+
+    ctx.globalCompositeOperation = "lighter";
+
+    /* glow */
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 3.4);
+    g.addColorStop(0, "hsla(" + h + ",100%,60%," + (0.42 * core).toFixed(3) + ")");
+    g.addColorStop(0.4, "hsla(" + (h + 40) + ",100%,50%," + (0.12 * core).toFixed(3) + ")");
+    g.addColorStop(1, "hsla(" + h + ",100%,50%,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+    /* neon stroke in the Art chapter */
+    var a3 = clamp(1 - (Math.abs(p - centers[3]) - 0.05) / 0.09, 0, 1);
+    if (a3 > 0.01) {
+      ctx.save(); ctx.lineWidth = 3; ctx.lineCap = "round";
+      ctx.strokeStyle = "hsla(322,100%,68%," + (0.85 * a3).toFixed(3) + ")";
+      ctx.shadowColor = "hsl(322,100%,60%)"; ctx.shadowBlur = 18;
+      var span = W * 1.1 * clamp((p - (centers[3] - 0.1)) / 0.14, 0, 1);
+      ctx.beginPath();
+      for (var x = -20; x < span; x += 8) {
+        var y = cy + R * 1.9 + Math.sin(x * 0.014 + (reduce ? 0 : t * 0.0016)) * R * 0.22;
+        if (x < -19) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke(); ctx.restore();
+    }
+
+    /* sphere of points */
+    for (i = 0; i < SP.length; i++) {
+      proj(SP[i][0] * 0.62, SP[i][1] * 0.62, SP[i][2] * 0.62, ay, ax);
+      var a = clamp(0.5 + q2 * 0.9, 0.08, 0.95) * (0.35 + 0.65 * core), s = 1.2 + (q2 + 0.62) * 1.4;
+      ctx.fillStyle = "hsla(" + (h + 10) + ",100%,78%," + a.toFixed(3) + ")";
+      ctx.fillRect(cx + q0 * R - s / 2, cy + q1 * R - s / 2, s, s);
+    }
+
+    /* rings */
+    ctx.lineWidth = 1.5;
+    for (k = 0; k < 3; k++) {
+      ring((1.0 + k * 0.3) * spread, k * 1.0472 + p * 2.6 * (k + 1) * 0.35, ay * (1 - k * 0.18), ax, R, cx, cy, h + k * 26, 0.9 * (0.4 + 0.6 * core));
+    }
+
+    /* orbiting particles */
+    for (i = 0; i < PT.length; i++) {
+      var o = PT[i], ang = o.ph + (reduce ? 0 : t * 0.0004 * o.sp) + p * 7 * o.sp;
+      var rad = o.r * (0.7 + scat * 0.55);
+      proj(Math.cos(ang) * rad, o.y * scat * 0.8, Math.sin(ang) * rad, ay * 0.4, ax * 0.6);
+      var pa = clamp(0.45 + q2 * 0.25, 0.1, 0.9), ps = 1.4 + (q2 + 2) * 0.35;
+      ctx.fillStyle = o.hue ? "hsla(" + h + ",100%,75%," + pa.toFixed(3) + ")" : "hsla(322,100%,72%," + pa.toFixed(3) + ")";
+      ctx.fillRect(cx + q0 * R - ps / 2, cy + q1 * R - ps / 2, ps, ps);
+    }
+
+    /* lamp core */
+    var fl = reduce ? 1 : 1 + 0.05 * Math.sin(t * 0.007) + 0.03 * Math.sin(t * 0.0131);
+    var cr = R * 0.52 * (0.5 + 0.5 * core) * fl;
+    var cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+    cg.addColorStop(0, "rgba(255,255,255," + (0.95 * core).toFixed(3) + ")");
+    cg.addColorStop(0.35, "hsla(" + h + ",100%,72%," + (0.7 * core).toFixed(3) + ")");
+    cg.addColorStop(1, "hsla(" + h + ",100%,55%,0)");
+    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fill();
+
+    ctx.globalCompositeOperation = "source-over";
+
+    /* chapters, hud */
+    var active = 0, best = 9;
+    for (i = 0; i < N; i++) {
+      var d = p - centers[i], ad = Math.abs(d);
+      var op = clamp(1 - (ad - 0.04) / 0.05, 0, 1);
+      var el = chs[i];
+      el.style.opacity = op.toFixed(3);
+      el.style.visibility = op < 0.01 ? "hidden" : "visible";
+      el.style.transform = "translateY(" + (-d * 55).toFixed(2) + "vh)";
+      el.style.pointerEvents = op > 0.5 ? "auto" : "none";
+      if (ad < best) { best = ad; active = i; }
+    }
+    for (i = 0; i < N; i++) dots[i].setAttribute("aria-current", i === active ? "true" : "false");
+    $("prog").style.width = (p * 100).toFixed(2) + "%";
+    $("lhint").style.opacity = clamp(1 - p / 0.05, 0, 1).toFixed(2);
+    var cv4 = Math.round(3024 * ease(clamp((p - 0.7) / 0.08, 0, 1)));
+    $("count").textContent = cv4.toLocaleString("en-US");
+
+    requestAnimationFrame(frame);
+  }
+
+  resize(); readScroll(); p = tp;
+  requestAnimationFrame(frame);
+})();
+
+</script>
+<script>
+
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* storage helpers (per-viewer convenience only) */
+  function load(k) { try { var v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function stamp(ts) { return new Date(ts).toLocaleDateString("en-GB", { day: "2-digit", month: "short" }); }
+
+  /* clock in Dhaka */
+  var tf, df;
+  try {
+    tf = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    df = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Dhaka", day: "2-digit", month: "2-digit", year: "numeric" });
+  } catch (e) { tf = null; }
+  function tick() {
+    if (!tf) return;
+    var d = new Date();
+    $("clock").textContent = tf.format(d);
+    $("dateline").textContent = df.format(d).replace(/\//g, ".");
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* moving bars, ticker, meters */
+  (function () {
+    var eq = $("eq"), i, b;
+    for (i = 0; i < 40; i++) {
+      b = document.createElement("i");
+      if (reduce) { b.style.transform = "scaleY(" + (0.2 + Math.random() * 0.8).toFixed(2) + ")"; }
+      else { b.style.animationDuration = (0.6 + Math.random() * 1.3).toFixed(2) + "s"; b.style.animationDelay = "-" + (Math.random() * 1.5).toFixed(2) + "s"; }
+      eq.appendChild(b);
+    }
+    var g = $("grp"), clone = g.cloneNode(true); clone.removeAttribute("id"); $("ticktrack").appendChild(clone);
+  })();
+  function meters() {
+    [["pages", "ns.stories"], ["art", "ns.art"], ["jar", "ns.jar"]].forEach(function (m) {
+      var n = load(m[1]).length;
+      $("m-" + m[0]).textContent = n;
+      $("b-" + m[0]).style.width = Math.max(3, Math.min(100, n * 10)) + "%";
+    });
+  }
+  meters(); setInterval(meters, 1200);
+
+  /* equalizer bars, ticker, meters */
+  (function () {
+    var eq = $("eq"), i, b;
+    for (i = 0; i < 40; i++) {
+      b = document.createElement("i");
+      if (reduce) { b.style.animation = "none"; b.style.transform = "scaleY(" + (0.2 + Math.random() * 0.8).toFixed(2) + ")"; }
+      else { b.style.animationDuration = (0.6 + Math.random() * 1.2).toFixed(2) + "s"; b.style.animationDelay = "-" + (Math.random() * 1.5).toFixed(2) + "s"; }
+      eq.appendChild(b);
+    }
+    var tr = $("ticktrack"); tr.appendChild(tr.firstElementChild.cloneNode(true));
+  })();
+  function meters() {
+    [["pages", "ns.stories"], ["art", "ns.art"], ["jar", "ns.jar"]].forEach(function (m) {
+      var n = load(m[1]).length;
+      $("m-" + m[0]).textContent = n;
+      $("b-" + m[0]).style.width = Math.max(3, Math.min(100, n * 10)) + "%";
+    });
+  }
+  meters(); setInterval(meters, 1200);
+
+  /* tabs */
+  var names = ["stories", "sketch", "random"];
+  function show(name) {
+    names.forEach(function (n) {
+      var on = n === name;
+      $("tab-" + n).setAttribute("aria-selected", on ? "true" : "false");
+      $("tab-" + n).tabIndex = on ? 0 : -1;
+      $("p-" + n).hidden = !on;
+    });
+  }
+  names.forEach(function (n, i) {
+    $("tab-" + n).addEventListener("click", function () { show(n); });
+    $("tab-" + n).addEventListener("keydown", function (e) {
+      var j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+      if (j === null) return;
+      j = (j + names.length) % names.length; show(names[j]); $("tab-" + names[j]).focus();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-go]"), function (b) {
+    b.addEventListener("click", function () { show(b.getAttribute("data-go")); $("deck").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
+  });
+  show("stories");
+
+  /* hero particle field */
+  (function () {
+    var cv = $("field"), ctx = cv.getContext("2d"), hero = $("hero");
+    var W = 0, H = 0, dpr = 1, pts = [], mouse = { x: -999, y: -999 }, raf = 0;
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = hero.clientWidth; H = hero.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.max(24, Math.min(80, Math.floor(W * H / 12000)));
+      pts = [];
+      for (var i = 0; i < n; i++) pts.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35 });
+      draw();
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var i, j, p, q, d;
+      for (i = 0; i < pts.length; i++) {
+        p = pts[i];
+        if (!reduce) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+        }
+        for (j = i + 1; j < pts.length; j++) {
+          q = pts[j]; d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d < 120) { ctx.strokeStyle = "rgba(92,225,255," + (0.22 * (1 - d / 120)).toFixed(3) + ")"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
+        }
+        d = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+        if (d < 150) { ctx.strokeStyle = "rgba(255,79,216," + (0.55 * (1 - d / 150)).toFixed(3) + ")"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
+        ctx.fillStyle = "rgba(200,235,255,0.85)"; ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, 6.283); ctx.fill();
+      }
+    }
+    var vis = true; if (window.IntersectionObserver) new IntersectionObserver(function (en) { vis = en[0].isIntersecting; }).observe(hero);
+    function loop() { if (vis) draw(); raf = requestAnimationFrame(loop); }
+    hero.addEventListener("pointermove", function (e) { var r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+    hero.addEventListener("pointerleave", function () { mouse.x = mouse.y = -999; });
+    if (window.ResizeObserver) new ResizeObserver(size).observe(hero); else { window.addEventListener("resize", size); }
+    size();
+    if (!reduce) {
+      loop();
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) { cancelAnimationFrame(raf); } else { cancelAnimationFrame(raf); loop(); }
+      });
+    }
+  })();
+
+  /* stories */
+  function renderStories() {
+    var list = load("ns.stories"), ul = $("s-list");
+    ul.textContent = "";
+    if (!list.length) { var li = document.createElement("li"); li.className = "empty"; li.textContent = "Nothing here yet. Your saved pages will show up in this list."; ul.appendChild(li); return; }
+    list.slice().reverse().forEach(function (s) {
+      var li = document.createElement("li"); li.className = "entry";
+      var h = document.createElement("h4"); h.textContent = s.title;
+      var p = document.createElement("p"); p.textContent = s.text;
+      var row = document.createElement("div"); row.className = "row";
+      var t = document.createElement("span"); t.textContent = stamp(s.ts);
+      var b = document.createElement("button"); b.className = "link"; b.type = "button"; b.textContent = "Delete";
+      b.addEventListener("click", function () { save("ns.stories", load("ns.stories").filter(function (x) { return x.id !== s.id; })); renderStories(); });
+      row.appendChild(t); row.appendChild(b);
+      li.appendChild(h); li.appendChild(p); li.appendChild(row); ul.appendChild(li);
+    });
+  }
+  $("s-save").addEventListener("click", function () {
+    var title = $("s-title").value.trim(), text = $("s-text").value.trim();
+    if (!text) { $("s-note").textContent = "Write a line or two first, then save."; return; }
+    var list = load("ns.stories");
+    list.push({ id: Date.now(), title: title || "Untitled page", text: text, ts: Date.now() });
+    if (save("ns.stories", list)) { $("s-title").value = ""; $("s-text").value = ""; $("s-note").textContent = "Saved to your pages."; }
+    else { $("s-note").textContent = "This browser would not let the page save. Copy your text somewhere safe."; }
+    renderStories();
+  });
+  renderStories();
+
+  /* sketchpad */
+  var pad = $("pad"), c = pad.getContext("2d"), SHEET = "#080c1e";
+  var colors = ["#5ce1ff", "#ff4fd8", "#8b6cff", "#b6ff5c", "#ffc857", "#f4f6ff"];
+  var color = colors[0], erasing = false, glow = true, drawing = false, last = null, undoStack = [];
+  c.lineCap = "round"; c.lineJoin = "round";
+
+  function sheet() { c.shadowBlur = 0; c.globalCompositeOperation = "source-over"; c.fillStyle = SHEET; c.fillRect(0, 0, pad.width, pad.height); }
+  function glowStroke(col, w, fn) {
+    c.save(); c.strokeStyle = col; c.lineWidth = w; c.shadowColor = col; c.shadowBlur = 18; fn(); c.restore();
+  }
+  function doodle() {
+    sheet();
+    c.save(); c.fillStyle = "#ffc857"; c.shadowColor = "#ffc857"; c.shadowBlur = 30;
+    c.beginPath(); c.arc(680, 170, 70, 0, 6.283); c.fill(); c.restore();
+    c.fillStyle = SHEET; c.beginPath(); c.arc(710, 150, 62, 0, 6.283); c.fill();
+    [[120, 90, 3], [260, 60, 2], [400, 130, 3], [520, 50, 2], [800, 330, 2], [90, 230, 2], [330, 220, 2]].forEach(function (s) {
+      c.fillStyle = "#e6ebff"; c.beginPath(); c.arc(s[0], s[1], s[2], 0, 6.283); c.fill();
+    });
+    [[430, "#5ce1ff"], [490, "#8b6cff"], [550, "#ff4fd8"]].forEach(function (w) {
+      glowStroke(w[1], 5, function () {
+        c.beginPath(); c.moveTo(40, w[0]);
+        for (var x = 40; x < 860; x += 100) c.quadraticCurveTo(x + 25, w[0] - 28, x + 50, w[0]), c.quadraticCurveTo(x + 75, w[0] + 28, x + 100, w[0]);
+        c.stroke();
+      });
+    });
+    glowStroke("#b6ff5c", 5, function () { c.beginPath(); c.moveTo(250, 380); c.lineTo(330, 380); c.lineTo(300, 340); c.closePath(); c.stroke(); c.beginPath(); c.moveTo(290, 340); c.lineTo(290, 290); c.stroke(); });
+  }
+  doodle();
+
+  function pos(e) { var r = pad.getBoundingClientRect(); return { x: (e.clientX - r.left) * pad.width / r.width, y: (e.clientY - r.top) * pad.height / r.height }; }
+  function snap() { try { undoStack.push(c.getImageData(0, 0, pad.width, pad.height)); if (undoStack.length > 8) undoStack.shift(); } catch (e) {} }
+  function style() {
+    var w = +$("size").value;
+    c.lineWidth = erasing ? w * 2 : w;
+    c.strokeStyle = erasing ? SHEET : color;
+    c.shadowColor = color; c.shadowBlur = (glow && !erasing) ? 16 : 0;
+  }
+  pad.addEventListener("pointerdown", function (e) {
+    e.preventDefault(); pad.setPointerCapture(e.pointerId);
+    snap(); drawing = true; last = pos(e); style();
+    c.beginPath(); c.moveTo(last.x, last.y); c.lineTo(last.x + 0.01, last.y + 0.01); c.stroke();
+    $("hint").style.opacity = 0;
+  });
+  pad.addEventListener("pointermove", function (e) {
+    if (!drawing) return;
+    var p = pos(e); style();
+    c.beginPath(); c.moveTo(last.x, last.y); c.lineTo(p.x, p.y); c.stroke(); last = p;
+  });
+  function stop() { drawing = false; }
+  pad.addEventListener("pointerup", stop); pad.addEventListener("pointercancel", stop);
+
+  var sw = $("swatches");
+  colors.forEach(function (col, i) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.style.background = col;
+    b.setAttribute("aria-label", "Color " + (i + 1)); b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.addEventListener("click", function () {
+      color = col; erasing = false; $("erase").setAttribute("aria-pressed", "false");
+      Array.prototype.forEach.call(sw.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    });
+    sw.appendChild(b);
+  });
+  $("glow").addEventListener("click", function () { glow = !glow; this.setAttribute("aria-pressed", String(glow)); });
+  $("erase").addEventListener("click", function () { erasing = !erasing; this.setAttribute("aria-pressed", String(erasing)); });
+  $("undo").addEventListener("click", function () { var s = undoStack.pop(); if (s) c.putImageData(s, 0, 0); });
+  $("clear").addEventListener("click", function () { snap(); sheet(); $("hint").style.opacity = 0; });
+
+  function renderWall() {
+    var list = load("ns.art"), w = $("wall"); w.textContent = "";
+    if (!list.length) { var d = document.createElement("div"); d.className = "empty"; d.textContent = "The wall is empty. Pin a drawing and it will hang here."; w.appendChild(d); return; }
+    list.slice().reverse().forEach(function (a) {
+      var t = document.createElement("div"); t.className = "tile";
+      var im = document.createElement("img"); im.src = a.img; im.alt = "Pinned drawing from " + stamp(a.ts);
+      var row = document.createElement("div"); row.className = "row";
+      var s = document.createElement("span"); s.textContent = stamp(a.ts);
+      var b = document.createElement("button"); b.className = "link"; b.type = "button"; b.textContent = "Remove";
+      b.addEventListener("click", function () { save("ns.art", load("ns.art").filter(function (x) { return x.id !== a.id; })); renderWall(); });
+      row.appendChild(s); row.appendChild(b); t.appendChild(im); t.appendChild(row); w.appendChild(t);
+    });
+  }
+  $("pin").addEventListener("click", function () {
+    var list = load("ns.art"), img;
+    try { img = pad.toDataURL("image/jpeg", 0.82); } catch (e) { $("a-note").textContent = "Could not read the drawing."; return; }
+    list.push({ id: Date.now(), img: img, ts: Date.now() });
+    while (list.length > 8) list.shift();
+    $("a-note").textContent = save("ns.art", list) ? "Pinned to the wall. The wall keeps your latest 8 drawings." : "This browser would not let the wall save.";
+    renderWall();
+  });
+  renderWall();
+
+  /* randomizer */
+  var chars = ["a night-shift lighthouse keeper", "a robot that collects lost umbrellas", "a retired ferry captain", "a cat who can hear colors", "a courier who delivers dreams", "a kid who repairs old satellites", "a sleepless baker", "the last librarian on Mars", "a street painter with no hands but a very loud voice"];
+  var places = ["a floating market above the clouds", "a train that never reaches its station", "a flooded city lit by lanterns", "a rooftop garden on a space station", "a village at the edge of the monsoon", "an abandoned neon arcade", "a library under the sea", "a bus stop in the middle of a desert"];
+  var objs = ["a cracked pocket watch", "a lamp that hums", "a map with one blank corner", "a jar of static", "a paper boat that will not sink", "a radio tuned to tomorrow", "a key with no door"];
+  var twists = ["but nobody remembers why", "the day before everything changes", "while a storm creeps closer", "just as the lights go out", "and it quietly answers back", "and someone has been there first"];
+  var subjects = ["a city that floats", "your favorite food as a robot", "a tiny dragon at a bus stop", "a lighthouse in space", "the moon as a lamp", "a river made of light", "a cat astronaut", "a market at midnight"];
+  var rules = ["using only two colors", "without lifting the pen", "in under two minutes", "with your non-writing hand", "using only circles", "with the biggest brush", "using only straight lines"];
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  var cur = null;
+  function chip(label, val) { var d = document.createElement("div"); d.className = "chip"; var b = document.createElement("b"); b.textContent = label; d.appendChild(b); d.appendChild(document.createTextNode(val)); return d; }
+  function roll() {
+    var ch = pick(chars), pl = pick(places), ob = pick(objs), tw = pick(twists);
+    cur = ch.charAt(0).toUpperCase() + ch.slice(1) + " finds " + ob + " in " + pl + ", " + tw + ".";
+    var box = $("chips"); box.textContent = "";
+    box.appendChild(chip("Character", ch)); box.appendChild(chip("Place", pl)); box.appendChild(chip("Object", ob));
+    $("prompt").textContent = cur;
+  }
+  $("roll").addEventListener("click", roll);
+  $("roll2").addEventListener("click", function () { $("dare").textContent = "Draw " + pick(subjects) + " " + pick(rules) + "."; });
+  function renderJar() {
+    var list = load("ns.jar"), ul = $("jar"); ul.textContent = "";
+    if (!list.length) { var li = document.createElement("li"); li.className = "empty"; li.textContent = "Empty for now. Keep a premise you like and it will wait here."; ul.appendChild(li); return; }
+    list.slice().reverse().forEach(function (j) {
+      var li = document.createElement("li"); li.className = "entry";
+      var p = document.createElement("p"); p.textContent = j.text; p.style.color = "var(--fg)";
+      var row = document.createElement("div"); row.className = "row";
+      var t = document.createElement("span"); t.textContent = stamp(j.ts);
+      var b = document.createElement("button"); b.className = "link"; b.type = "button"; b.textContent = "Remove";
+      b.addEventListener("click", function () { save("ns.jar", load("ns.jar").filter(function (x) { return x.id !== j.id; })); renderJar(); });
+      row.appendChild(t); row.appendChild(b); li.appendChild(p); li.appendChild(row); ul.appendChild(li);
+    });
+  }
+  $("keep").addEventListener("click", function () {
+    if (!cur) { $("prompt").textContent = "Generate a premise first, then keep it."; return; }
+    var list = load("ns.jar"); list.push({ id: Date.now(), text: cur, ts: Date.now() }); save("ns.jar", list); renderJar();
+  });
+  renderJar();
+  roll();
+  $("dare").textContent = "Draw " + pick(subjects) + " " + pick(rules) + ".";
+})();
+
+</script>
